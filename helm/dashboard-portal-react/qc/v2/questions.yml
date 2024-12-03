@@ -1,0 +1,24 @@
+categories:
+- Ichiba
+questions:
+  - variable: replicaCount
+    description: "Replicas"
+    type: int
+    default: 2
+    required: true
+    label: Replicas
+    group: "global Settings"
+  - variable: ichiba.ingress.domain
+    description: "Domain"
+    default: "test-happy.ichiba.net"
+    type: string
+    required: true
+    label: Domain
+    group: "global Settings"    
+  - variable: ichiba.dapr
+    description: "dapr"
+    type: boolean
+    default: false
+    required: true
+    label: Enable dapr
+    group: "Config"

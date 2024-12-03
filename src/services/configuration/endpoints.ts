@@ -1,0 +1,28 @@
+const PREFIX = '/user-management';
+
+export const configuration = {
+  getPlans: `${PREFIX}/plans`,
+  editPlans: `${PREFIX}/plans`,
+  detailPlans: `${PREFIX}/plans/{id}`,
+  createPlans: `${PREFIX}/plans`,
+  apps: `${PREFIX}/apps`,
+  deletePlan: `${PREFIX}/plans/{id}`,
+  changeLog: `${PREFIX}/plans/{id}/histories`,
+  featureApplicationGroups: `${PREFIX}/feature-groups`,
+  getServiceModels: `${PREFIX}/service-models`,
+  createServiceModel: `${PREFIX}/service-models`,
+  getFunctionList: `${PREFIX}/features`,
+  deleteServiceModel: `${PREFIX}/service-models/{id}`,
+  changeLogServiceModel: `${PREFIX}/service-models/{id}/histories`,
+  detailServiceModel: `${PREFIX}/service-models/{id}`,
+  editServiceModel: `${PREFIX}/service-models`,
+  fees: `/pricing-service/fees`,
+  detailFees: `/pricing-service/fees/{id}`,
+  getPricingModel: `/pricing-service/fees`,
+  getPricingModelChangeLogs: `/pricing-service/fees/{id}/histories`,
+  deletePricingModel: `/pricing-service/fees/{id}`,
+  chargeModel: '/pricing-service/charge-models',
+  getChargeUnits: '/pricing-service/charge-units',
+  currencyByPricing: '/pricing-service/currencies',
+  buildTrees: `${PREFIX}/permissions/build-trees`,
+};

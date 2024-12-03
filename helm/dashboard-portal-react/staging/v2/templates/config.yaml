@@ -1,0 +1,11 @@
+{{ $name := .Values.name}}
+{{ range $key, $value :=  .Values.ichiba.env }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-{{ $key }}
+data:
+{{- tpl $value $ | nindent 4 }}
+---
+{{end}}

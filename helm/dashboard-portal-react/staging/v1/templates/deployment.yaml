@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    {{- include "labels" . | nindent 6 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{ if .Values.ichiba.dapr }}
+          dapr.io/app-id: {{  .Values.name }}
+          dapr.io/enabled:  {{ .Values.ichiba.dapr | quote}}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.container.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.container.image.pullPolicy }}
+          ports:
+            - name: {{ .Values.service.name }}
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{ $app := .Values.name}}
+          envFrom:
+          - configMapRef:
+              name: generic
+          {{- if .Values.ichiba.env }}
+          {{- range  $name,$value := .Values.ichiba.env }}
+          - configMapRef:
+              name:  {{$app}}-{{ $name }}
+           {{ end }}
+          {{ end }}
+          - secretRef:
+              name: connection
+          {{- if .Values.ichiba.secret }}
+
+          {{- range  $name,$value := .Values.ichiba.secret }}
+
+          - secretRef:
+             name: {{ $app}}-{{ $name }}
+          {{ end }}
+         {{ end }}
+          {{- with .Values.container.livenessProbe }}
+          livenessProbe:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          {{- with .Values.container.readinessProbe }}
+          readinessProbe:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.container.resources | nindent 12 }}
+
+      volumes:
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.name
+                      operator: In
+                      values:
+                        - {{ .Values.name }}
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,31 @@
+{{- $port := .Values.service.port }}
+{{- $name := .Values.name }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.name  }}
+  annotations:
+    nginx.ingress.kubernetes.io/canary: 'true'
+    nginx.ingress.kubernetes.io/canary-by-header: x-ichiba-blue-green
+    nginx.ingress.kubernetes.io/canary-by-header-value: v2
+  labels:
+    {{- include "labels" . | nindent 4 }}
+spec:
+  rules:
+    - host: {{ .Values.ichiba.ingress.domain | quote }}
+      http:
+        paths:
+          - path: {{ .Values.ichiba.ingress.path }}
+            {{- if and .Values.ichiba.ingress.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .Values.ichiba.ingress.pathType }}
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $name}}
+                port:
+                  number: {{ $port }}
+              {{- else }}
+              serviceName: {{ $name }}
+              servicePort: {{ $port }}
+              {{ end }}

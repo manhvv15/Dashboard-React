@@ -1,0 +1,6 @@
+.root {
+  @apply flex-1 overflow-y-auto overflow-x-hidden;
+  &::-webkit-scrollbar {
+    @apply hidden;
+  }
+}

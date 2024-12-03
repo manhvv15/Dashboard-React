@@ -1,0 +1,96 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": { "jsx": true },
+  },
+  "settings": {
+    "react": { "version": "detect" },
+    "import/resolver": {
+      "node": { "paths": ["src"], "extensions": [".js", ".jsx", ".ts", ".tsx"] },
+    },
+  },
+  "env": { "browser": true, "amd": true, "node": true },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:import/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended",
+  ],
+  "plugins": ["unused-imports"],
+  "rules": {
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "react/react-in-jsx-scope": "off",
+    "jsx-a11y/accessible-emoji": "on",
+    "react/prop-types": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "max-len": [1, 120, 2, { "ignoreComments": true, "ignoreStrings": true }],
+    "no-console": ["warn", { "allow": ["warn", "error", "info"] }],
+    "no-duplicate-case": "warn",
+    "import/newline-after-import": ["error", { "count": 1 }],
+    "lines-between-class-members": ["error", "always"],
+    "import/no-duplicates": "error",
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "index", "sibling", "parent"],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before",
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal",
+            "position": "before",
+          },
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true,
+        },
+      },
+    ],
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "import/no-unresolved": "off",
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": ["warn"],
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_",
+      },
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "endOfLine": "auto",
+      },
+    ],
+    "import/named": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+      },
+    ],
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+  },
+}

@@ -1,0 +1,91 @@
+instance: product
+name: dashboard-portal
+app: dashboard-portal
+appVersion: v1
+
+container:
+  port: 80
+  image:
+    repository: docker-hub.ichiba.net/ichiba-product/ichiba.web.dashboard-portal
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+  livenessProbe: |
+    failureThreshold: 3
+    initialDelaySeconds: 30
+    periodSeconds: 2
+    successThreshold: 1
+    tcpSocket:
+      port: {{ .Values.service.port }}
+    timeoutSeconds: 2
+  readinessProbe: |
+    failureThreshold: 3
+    initialDelaySeconds: 30
+    periodSeconds: 2
+    successThreshold: 2
+    tcpSocket:
+      port: {{ .Values.service.port }}
+    timeoutSeconds: 2
+  resources: {}
+
+replicaCount: 2
+
+service:
+  name: tcp
+  type: ClusterIP
+  port: 80
+
+imagePullSecrets:
+  - name: docker-account
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 85
+  targetMemoryUtilizationPercentage: 85
+podAntiAffinity:
+  enabled: true
+nodeSelector: {}
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferred: true
+
+ichiba:
+  env:
+    config: |
+      {{- .Files.Get "config/app.config" }}
+  secret:
+  ingress:
+    domain: happy.ichiba.net
+    path: /
+    pathType: ImplementationSpecific
+  dapr: false
+

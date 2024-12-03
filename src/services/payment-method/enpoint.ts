@@ -1,0 +1,27 @@
+const payment = {
+  getAllPaymentMethod: `/payment/system/payment-methods`,
+  merchantAccountActive: '/payment/system/merchant-accounts/my-method',
+  updateMerchantAccount: '/payment/system/merchant-accounts',
+  deleteMerchantAccount: '/payment/system/merchant-accounts',
+  getPaypal: '/payment/system/merchant-accounts/paypal',
+  createPaypal: '/payment/system/merchant-accounts/paypal',
+  updatePaypal: '/payment/system/merchant-accounts/paypal',
+  activePaypal: '/payment/system/merchant-accounts/status',
+  addBanBidv: '/payment/system/merchant-accounts/bidv/init',
+  getBidvs: '/payment/system/merchant-accounts/bidv',
+  overviewQRBidv: '/payment/system/payment-intents/bidv',
+  verifyOtpBidv: '/payment/system/merchant-accounts/bidv/confirm',
+  editBankAccountBidv: '/payment/system/merchant-accounts/bank-accounts/bidv',
+  deleteBidv: '/payment/system/merchant-accounts/bank-accounts/bidv',
+  deactiveBidv: '/payment/system/merchant-accounts/bidv/deactivation',
+  getMerchantAccountPayme: `/payment/system/merchant-accounts/payme`,
+  generateMerchantKey: `/payment/merchant-accounts/generate-merchant-key`,
+  createMerchantAccountPayme: `/payment/system/merchant-accounts/payme`,
+  deactiveMerchantAccountPayme: `/payment/system/merchant-accounts/payme/deactivation`,
+  updateStatusMerchantAccount: '/payment/system/merchant-accounts/status',
+  createStripe: '/payment/system/merchant-accounts/stripe',
+  getStripe: '/payment/system/merchant-accounts/stripe',
+  updateStripe: '/payment/system/merchant-accounts/stripe',
+};
+
+export default payment;
