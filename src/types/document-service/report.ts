@@ -1,3 +1,5 @@
+import { StatusEnum } from '../user-management/workspace';
+
 export interface ReportPagingResponse {
   id: string;
   code: string;
@@ -13,6 +15,7 @@ export interface PaginationReportRequest {
   pageNumber: number;
   pageSize: number;
   textSearch?: string;
+  status?: StatusEnum[] | null | undefined;
 }
 export interface FormReport {
   code: string;
@@ -20,6 +23,7 @@ export interface FormReport {
   reportGroupId: string;
   reportGroupName: string;
   status: ReportStatusEnum;
+  // allowTypes?: Array<'PDF' | 'XLSX'>;
   allowTypes?: string[];
   isFile: boolean;
   FilePath: string;

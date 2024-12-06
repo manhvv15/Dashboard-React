@@ -10,15 +10,16 @@ import SvgIcon from '@/components/commons/SvgIcon';
 import LayoutSection from '@/components/layouts/layout-section';
 import { LocaleNamespace } from '@/constants/enums/common';
 import { useApp } from '@/hooks/use-app';
-import { FormReport, UpdateReportRequest } from '@/types/document-service/report';
-import { updateReport } from '@/services/document-service/report';
-import { CreateOrUpdateReportForm } from '@/components/reports/CreateOrUpdateReportForm';
+import { FormReportGroup, UpdateReportGroupRequest } from '@/types/document-service/report-group';
+import { updateReportGroup } from '@/services/document-service/reportGroup';
+import { CreateOrUpdateReportGroupForm } from '@/components/report-groups/CreateOrUpdateReportGroupForm';
 
-const UpdateReport = () => {
+const UpdateReportGroup = () => {
   const { t: error } = useTranslation(LocaleNamespace.Error);
-  const { id } = useParams();
   const navigate = useNavigate();
+  const { id } = useParams();
   const { showToast } = useApp();
+
   const schema = yup
     .object()
     .shape({
@@ -34,26 +35,26 @@ const UpdateReport = () => {
         .min(3, error('role.form.message.codeOrNameInValid'))
         .max(250, error('role.form.message.codeOrNameInValid'))
         .trim(),
-      reportGroupId: yup.string().required(error('fieldRequired')).trim(),
+      displayOrder: yup.string().required(error('fieldRequired')).trim(),
       status: yup.string().required(error('fieldRequired')).trim(),
     })
     .required();
 
-  const methods = useForm<FormReport>({
+  const methods = useForm<FormReportGroup>({
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
 
-  const updateReportMutation = useMutation({
-    mutationFn: (params: { id: string; data: UpdateReportRequest }) => {
-      return updateReport(params.id, params.data);
+  const updateReportGroupMutation = useMutation({
+    mutationFn: (params: { id: string; data: UpdateReportGroupRequest }) => {
+      return updateReportGroup(params.id, params.data);
     },
     onSuccess: () => {
       showToast({
         type: 'success',
-        summary: t('reports.editReportSuccessfully'),
+        summary: t('reportgroups.editReportGroupSuccessfully'),
       });
-      navigate('/environment-settings/reports');
+      navigate('/environment-settings/report-groups');
     },
     onError: () => {
       showToast({
@@ -63,16 +64,15 @@ const UpdateReport = () => {
     },
   });
 
-  const submitData = (data: FormReport) => {
+  const submitData = (data: FormReportGroup) => {
     const request = {
       id: id,
       code: data.code,
       name: data.name,
+      description: data.name,
+      displayOrder: data.displayOrder,
       status: parseInt(data.status.toString()),
-      reportGroupId: data.reportGroupId,
-      allowTypes: data.allowTypes ?? [],
-      fileInfo: data.fileInfo,
-    } as UpdateReportRequest;
+    } as UpdateReportGroupRequest;
     if (!id) {
       showToast({
         type: 'error',
@@ -80,15 +80,14 @@ const UpdateReport = () => {
       });
       return;
     }
-    updateReportMutation.mutate({ id, data: request });
+    updateReportGroupMutation.mutate({ id, data: request });
   };
-
   return (
     <LayoutSection
       label={
         <button onClick={() => navigate(-1)} className="flex items-center">
           <SvgIcon icon="arrow-left" width={24} height={24} className="text-ic-ink-6s" />
-          <span className="ml-1 text-base font-medium leading-6 text-ic-ink-6s">{t('report.edit')}</span>
+          <span className="ml-1 text-base font-medium leading-6 text-ic-ink-6s">{t('reportgroup.edit')}</span>
         </button>
       }
       right={
@@ -108,7 +107,7 @@ const UpdateReport = () => {
       <div className="scroll h-[calc(100vh_-_100px)] flex flex-col overflow-y-auto">
         <div className="flex justify-center p-6">
           <FormProvider {...methods}>
-            <CreateOrUpdateReportForm id={id} />
+            <CreateOrUpdateReportGroupForm id={id} />
           </FormProvider>
         </div>
       </div>
@@ -116,4 +115,4 @@ const UpdateReport = () => {
   );
 };
 
-export default UpdateReport;
+export default UpdateReportGroup;

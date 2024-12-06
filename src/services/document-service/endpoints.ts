@@ -9,6 +9,11 @@ export const report = {
 };
 export const reportGroup = {
   getAll: `${PREFIX}/report-groups`,
+  getPaging: `${PREFIX}/report-groups`,
+  getById: `${PREFIX}/report-groups/{id}`,
+  create: `${PREFIX}/report-groups`,
+  update: `${PREFIX}/report-groups/{id}`,
+  delete: `${PREFIX}/report-groups/{id}`,
 };
 export const template = {
   getAll: `${PREFIX}/templates`,

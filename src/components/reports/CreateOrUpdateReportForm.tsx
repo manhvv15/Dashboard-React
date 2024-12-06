@@ -63,6 +63,7 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
 
   const handleCheckboxChange = (value: string) => {
     const currentValues = watch('allowTypes') || [];
+
     const updatedValues = currentValues.includes(value)
       ? currentValues.filter((type: string) => type !== value)
       : [...currentValues, value];
@@ -77,13 +78,6 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
     const code = convertToCode(name);
     setValue('code', code);
   };
-  // const convertToCode = (name: string) => {
-  //   return name
-  //     .trim()
-  //     .split(' ')
-  //     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-  //     .join('_');
-  // };
   const convertToCode = (name: string) => {
     const normalizedName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -167,7 +161,11 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
           </div>
 
           <div className="mt-4" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <UploadFileTemplate fileInfo={watch('fileInfo')} setFileInfo={onHandleSetFileInfor} />
+            <UploadFileTemplate
+              fileInfo={watch('fileInfo')}
+              setFileInfo={onHandleSetFileInfor}
+              allowTypes={watch('allowTypes') || []}
+            />
           </div>
         </div>
       </div>

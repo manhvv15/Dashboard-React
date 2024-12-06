@@ -1,6 +1,6 @@
 import LayoutSection from '@/components/layouts/layout-section';
 import AccessibleComponent from '@/components/commons/AccessibleComponent';
-import { Button, DropdownFilter, Input, LoadingOverlay, Pagination } from '@ichiba/ichiba-core-ui';
+import { Button, Input, LoadingOverlay, Pagination } from '@ichiba/ichiba-core-ui';
 import { useTranslation } from 'react-i18next';
 import SvgIcon from '@/components/commons/SvgIcon';
 import { ACTIONS, OBJECTS } from '@/constants/variables/common';
@@ -11,16 +11,16 @@ import { PAGE_NUMBER_DEFAULT, PAGE_SIZE_DEFAULT } from '@/utils/constants';
 import { ChangeEvent, useState } from 'react';
 import { onlySpaces, SetStatePropertyFunc } from '@/utils/common';
 import Nodata from '@/components/commons/Nodata';
-import TableReport from '@/components/reports/TableReport';
-import { ReportPagingRequest, ReportStatusEnum } from '@/types/document-service/report';
-import { getReportPaging } from '@/services/document-service/report';
-const ReportManagement = () => {
+import { ReportGroupPagingRequest } from '@/types/document-service/report-group';
+import { getReportGroupPaging } from '@/services/document-service/reportGroup';
+import TableReportGroup from '@/components/report-groups/TableReportGroup';
+const ReportGroupManagement = () => {
   const { t } = useTranslation(LocaleNamespace.Common);
   const navigate = useNavigate();
   const handleCreate = () => {
     navigate('create');
   };
-  const filterHandler: SetStatePropertyFunc<ReportPagingRequest> = (propertyName, value) => {
+  const filterHandler: SetStatePropertyFunc<ReportGroupPagingRequest> = (propertyName, value) => {
     setParams((prev) => ({
       ...prev,
       pageNumber: 0,
@@ -43,34 +43,26 @@ const ReportManagement = () => {
     filterHandler('textSearch', value);
   };
 
-  const [params, setParams] = useState<ReportPagingRequest>({
+  const [params, setParams] = useState<ReportGroupPagingRequest>({
     pageNumber: PAGE_NUMBER_DEFAULT,
     pageSize: PAGE_SIZE_DEFAULT,
-  } as ReportPagingRequest);
+  } as ReportGroupPagingRequest);
   const action = useQuery({
-    queryKey: ['getReportPaging', params],
+    queryKey: ['getReportGroupPaging', params],
     queryFn: () =>
-      getReportPaging({
+      getReportGroupPaging({
         pageNumber: params?.pageNumber,
         pageSize: params?.pageSize,
         textSearch: params?.textSearch,
-        status: params?.status,
       }),
     retry: true,
   });
-  const statusOptions = [
-    { value: ReportStatusEnum.Active, label: t('active') },
-    { value: ReportStatusEnum.Deactivate, label: t('deactive') },
-  ];
-  const handleChangeStatus = (val?: number[]) => {
-    filterHandler('status', val);
-  };
 
   return (
     <LayoutSection
-      label={t('reports.reports')}
+      label={t('report-groups.report-groups')}
       right={
-        <AccessibleComponent object={OBJECTS.REPORTS} action={ACTIONS.CREATE}>
+        <AccessibleComponent object={OBJECTS.REPORT_GROUPS} action={ACTIONS.CREATE}>
           <Button onClick={() => handleCreate()}>
             <SvgIcon icon="plus" width={24} height={24} />
             <span className="ml-1">{t('create')}</span>
@@ -89,25 +81,10 @@ const ReportManagement = () => {
               hiddenClose
               size={40}
             />
-            <DropdownFilter
-              icon={
-                <SvgIcon icon="loading-checkmark-status-circle" width={16} height={16} className="text-ic-ink-6s" />
-              }
-              name={t('status')}
-              placement="bottom-start"
-              options={statusOptions}
-              size={'40'}
-              searchable
-              multiple
-              allowSelectAll
-              value={params.status ?? []}
-              onChange={handleChangeStatus}
-              className="ml-3 w-[200px]"
-            />
           </div>
           {action.data?.data.items && action.data?.data.items.length > 0 ? (
             <>
-              <TableReport items={action.data?.data.items ?? []} />
+              <TableReportGroup items={action.data?.data.items ?? []} />
               <Pagination
                 currentPage={params.pageNumber + 1}
                 setChangePage={handlePageChange}
@@ -126,4 +103,4 @@ const ReportManagement = () => {
   );
 };
 
-export default ReportManagement;
+export default ReportGroupManagement;

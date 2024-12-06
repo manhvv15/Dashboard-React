@@ -22,6 +22,7 @@ import PermissionRoutes from './permission';
 import RoleRoutes from './role';
 import UserRoutes from './user';
 import WorkspaceRoutes from './workspace';
+import ReportGroupRoutes from './report-groups';
 
 const RouterView = () => {
   return (
@@ -47,6 +48,7 @@ const RouterView = () => {
               <Route path="environment-settings/branding/*" element={<BrandingRoutes />} />
               <Route path="workspaces/*" element={<WorkspaceRoutes />} />
               <Route path="environment-settings/reports/*" element={<ReportRoutes />} />
+              <Route path="environment-settings/report-groups/*" element={<ReportGroupRoutes />} />
               <Route path="*" element={<div>Not Found</div>} />
             </Route>
             <Route path="email-confirm/*" element={<EmailConfirm />} />
