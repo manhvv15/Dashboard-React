@@ -17,7 +17,6 @@ interface Props {
 
 const DeleteReportForm = ({ id, open, setOpen }: Props) => {
   const { t: common } = useTranslation(LocaleNamespace.Common);
-  const { t: error } = useTranslation(LocaleNamespace.Error);
   const queryClient = useQueryClient();
 
   const { showToast } = useApp();
@@ -39,7 +38,7 @@ const DeleteReportForm = ({ id, open, setOpen }: Props) => {
       onError: () => {
         showToast({
           type: 'error',
-          summary: error('reports.deleteReportFaild'),
+          summary: common('reports.deleteReportFail'),
         });
         setOpen(false);
       },

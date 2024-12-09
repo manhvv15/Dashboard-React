@@ -160,12 +160,15 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
             {errors?.status?.message && <FormHelperText error>{error(errors?.status?.message)}</FormHelperText>}
           </div>
 
-          <div className="mt-4" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <UploadFileTemplate
-              fileInfo={watch('fileInfo')}
-              setFileInfo={onHandleSetFileInfor}
-              allowTypes={watch('allowTypes') || []}
-            />
+          <div className="mt-4">
+            <FormLabel>{t('report.uploadFile')}</FormLabel>
+            <div className="flex justify-start ">
+              <UploadFileTemplate
+                fileInfo={watch('fileInfo')}
+                setFileInfo={onHandleSetFileInfor}
+                allowTypes={watch('allowTypes') || []}
+              />
+            </div>
           </div>
         </div>
       </div>
