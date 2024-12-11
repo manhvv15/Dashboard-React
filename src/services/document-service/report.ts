@@ -29,6 +29,10 @@ export const updateReport = (id: string, data: UpdateReportRequest): Promise<Axi
   const url = report.update.replace('{id}', id);
   return instanceDocument.put(url, data);
 };
+export const downloadReport = (id: string): Promise<AxiosResponse> => {
+  const url = report.getDownloadFile.replace('{id}', id);
+  return instanceDocument.get(url);
+};
 
 export const deleteReport = (id: string): Promise<AxiosResponse> => {
   return instanceDocument.delete(compileRequestURL(report.delete, { id: id }));

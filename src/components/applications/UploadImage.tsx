@@ -37,7 +37,6 @@ export default function UploadImage({ updateImageURL, imageUpload, setImageUploa
   const onChangeAvatar = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0] as File;
-      debugger;
       const options = {
         minWidth: 600,
         minHeight: 600,

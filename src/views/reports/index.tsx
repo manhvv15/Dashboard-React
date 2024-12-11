@@ -47,7 +47,7 @@ const ReportManagement = () => {
     pageNumber: PAGE_NUMBER_DEFAULT,
     pageSize: PAGE_SIZE_DEFAULT,
   } as ReportPagingRequest);
-  const action = useQuery({
+  const report = useQuery({
     queryKey: ['getReportPaging', params],
     queryFn: () =>
       getReportPaging({
@@ -78,7 +78,7 @@ const ReportManagement = () => {
         </AccessibleComponent>
       }
     >
-      <LoadingOverlay className="h-full w-full px-2" isLoading={action.isLoading}>
+      <LoadingOverlay className="h-full w-full px-2" isLoading={report.isLoading}>
         <div className="w-full h-full flex flex-col bg-ic-white-6s p-3  rounded-md">
           <div className="flex mb-2">
             <Input
@@ -105,14 +105,14 @@ const ReportManagement = () => {
               className="ml-3 w-[200px]"
             />
           </div>
-          {action.data?.data.items && action.data?.data.items.length > 0 ? (
+          {report.data?.data.items && report.data?.data.items.length > 0 ? (
             <>
-              <TableReport items={action.data?.data.items ?? []} />
+              <TableReport items={report.data?.data.items ?? []} />
               <Pagination
                 currentPage={params.pageNumber + 1}
                 setChangePage={handlePageChange}
-                totalPage={action.data?.data.totalPages}
-                totalRecords={action.data?.data.totalRecords}
+                totalPage={report.data?.data.totalPages}
+                totalRecords={report.data?.data.totalRecords}
                 pageSize={PAGE_SIZE_DEFAULT}
                 setChangePageSize={handleSizeChange}
               />

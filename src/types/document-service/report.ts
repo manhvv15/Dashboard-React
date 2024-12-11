@@ -22,15 +22,17 @@ export interface FormReport {
   name: string;
   reportGroupId: string;
   reportGroupName: string;
+  templateName: string;
   status: ReportStatusEnum;
   // allowTypes?: Array<'PDF' | 'XLSX'>;
   allowTypes?: string[];
-  isFile: boolean;
+  isChangeTemplate: boolean;
   FilePath: string;
   fileInfo: {
     name: string;
     uri: string;
     contentType: string;
+    size: number;
   } | null;
 }
 export interface ReportByIdResponse {
@@ -41,6 +43,18 @@ export interface ReportByIdResponse {
   reportGroupName: string;
   status: ReportStatusEnum;
   allowTypes?: string[];
+  fileInfo: {
+    name: string;
+    uri: string;
+    contentType: string;
+    size: number;
+  } | null;
+}
+export interface FileDownloadResponse {
+  name: string;
+  type: string;
+  link: string;
+  fileContent: string;
 }
 export enum ReportStatusEnum {
   Active = 0,

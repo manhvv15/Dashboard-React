@@ -11,6 +11,11 @@ import { useNavigate } from 'react-router-dom';
 import { isGrantPermission } from '@/utils/common';
 import ReportStatus from './ReportStatus';
 import DeleteReportForm from './DeleteReportForm';
+import { useMutation } from '@tanstack/react-query';
+import { downloadReport } from '@/services/document-service/report';
+import { AxiosResponse } from 'axios';
+import saveAs from 'file-saver';
+import { showToast } from '@/utils/toasts';
 
 interface Props {
   items: ReportPagingResponse[];
@@ -24,6 +29,30 @@ const TableReport = ({ items }: Props) => {
   const handleEdit = (id: string) => {
     navigate(`edit/${id}`);
   };
+  const { mutate: handleDownload } = useMutation((id: string) => downloadReport(id), {
+    onSuccess: (data: AxiosResponse) => {
+      const binary = atob(data.data.fileContent);
+      const arrayBuffer = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        arrayBuffer[i] = binary.charCodeAt(i);
+      }
+      const file = new Blob([arrayBuffer], {
+        type: data.data.type,
+      });
+      saveAs(file, data.data.name);
+    },
+    onError: () => {
+      showToast({
+        type: 'error',
+        summary: common('downloadFail'),
+      });
+    },
+  });
+
+  const handleDownloadClick = (id: string) => {
+    handleDownload(id);
+  };
+
   const initColumns: GridColumn<ReportPagingResponse>[] = useMemo(
     () => [
       {
@@ -62,7 +91,7 @@ const TableReport = ({ items }: Props) => {
         },
       },
       {
-        headerName: common('Report-group name'),
+        headerName: common('report.reportGroupName'),
         width: 300,
         cellClass: 'flex',
         cellRenderer: ({ data }) => {
@@ -73,7 +102,6 @@ const TableReport = ({ items }: Props) => {
           );
         },
       },
-
       {
         headerName: common('status'),
         width: 90,
@@ -88,7 +116,7 @@ const TableReport = ({ items }: Props) => {
         },
       },
       {
-        headerName: common('Allow types'),
+        headerName: common('report.allowTypes'),
         width: 240,
         cellClass: 'flex',
         flex: 1,
@@ -130,6 +158,15 @@ const TableReport = ({ items }: Props) => {
                           {common('delete')}
                         </MenuItem>
                       </AccessibleComponent>
+                      <AccessibleComponent object={OBJECTS.REPORTS} action={ACTIONS.DOWNLOAD}>
+                        <MenuItem
+                          onClick={() => {
+                            handleDownloadClick(data.id);
+                          }}
+                        >
+                          Download
+                        </MenuItem>
+                      </AccessibleComponent>
                     </MenuList>
                   </Menu>
                 </div>
@@ -153,5 +190,4 @@ const TableReport = ({ items }: Props) => {
     </div>
   );
 };
-//
 export default TableReport;

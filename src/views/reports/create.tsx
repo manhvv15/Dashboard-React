@@ -68,7 +68,6 @@ const CreateReport = () => {
       status: parseInt(data.status.toString()),
       reportGroupId: data.reportGroupId,
       allowTypes: data.allowTypes ?? [],
-      isFile: data.isFile ?? false,
       fileInfo: data.fileInfo,
     } as CreateReportRequest;
     createReportMutation.mutate(request);

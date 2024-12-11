@@ -72,6 +72,7 @@ const UpdateReport = () => {
       reportGroupId: data.reportGroupId,
       allowTypes: data.allowTypes ?? [],
       fileInfo: data.fileInfo,
+      isChangeTemplate: data.isChangeTemplate,
     } as UpdateReportRequest;
     if (!id) {
       showToast({

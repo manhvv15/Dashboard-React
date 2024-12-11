@@ -1,4 +1,4 @@
-import { FormHelperText, FormLabel, Input, SelectPortal } from '@ichiba/ichiba-core-ui';
+import { Checkbox, FormHelperText, FormLabel, Input, SelectPortal } from '@ichiba/ichiba-core-ui';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { useFormContext } from 'react-hook-form';
@@ -8,6 +8,8 @@ import { FormReport, ReportByIdResponse, ReportStatusEnum } from '@/types/docume
 import { getReportById } from '@/services/document-service/report';
 import { getAllReportGroups } from '@/services/document-service/reportGroup';
 import UploadFileTemplate from './UploadFileTemplate';
+import { useEffect, useRef } from 'react';
+
 interface IProps {
   id?: string;
 }
@@ -22,12 +24,14 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
     onSuccess: (data: AxiosResponse<ReportByIdResponse>) => {
       setValue('code', data.data.code);
       setValue('name', data.data.name);
+      setValue('fileInfo', data.data.fileInfo);
       setValue('reportGroupName', data.data.reportGroupName);
       setValue('reportGroupId', data.data.reportGroupId);
       setValue('status', data.data.status);
       setValue('allowTypes', data.data.allowTypes);
     },
   });
+
   const {
     register,
     watch,
@@ -52,22 +56,15 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
         value: i.id,
       }))
     : [];
-  const reportTypeStatus: { label: string; value: number }[] = [
-    { label: 'Active', value: ReportStatusEnum.Active },
-    { label: 'Deactive', value: ReportStatusEnum.Deactivate },
-  ];
-
   const handleChangeStatus = (data: number) => {
     setValue('status', data);
   };
 
   const handleCheckboxChange = (value: string) => {
     const currentValues = watch('allowTypes') || [];
-
     const updatedValues = currentValues.includes(value)
       ? currentValues.filter((type: string) => type !== value)
       : [...currentValues, value];
-
     setValue('allowTypes', updatedValues, { shouldValidate: true });
   };
   const onHandleSetFileInfor = (event: any) => {
@@ -79,15 +76,32 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
     setValue('code', code);
   };
   const convertToCode = (name: string) => {
-    const normalizedName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-    return normalizedName
+    return name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .trim()
       .split(' ')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join('_');
   };
+  const reportTypeStatus = [
+    { label: 'Active', value: ReportStatusEnum.Active },
+    { label: 'Deactive', value: ReportStatusEnum.Deactivate },
+  ];
+  const initialFileName = useRef<string | null>(null);
 
+  useEffect(() => {
+    const fileInfo = watch('fileInfo');
+    if (!initialFileName.current) {
+      initialFileName.current = fileInfo?.name ?? null;
+    }
+
+    if (fileInfo?.name !== initialFileName.current) {
+      setValue('isChangeTemplate', true);
+    } else {
+      setValue('isChangeTemplate', false);
+    }
+  }, [watch('fileInfo'), setValue]);
   return (
     <div className="scroll h-full overflow-y-auto flex justify-center flex-col w-full max-w-[1200px]">
       <div className="bg-ic-white-6s p-4 rounded-lg">
@@ -122,17 +136,15 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
             <FormLabel required>{t('report.reportGroupName')}</FormLabel>
             <SelectPortal
               placeholder={t('report.reportGroupName')}
-              options={reportGroups ?? []}
-              onChange={(e: any) => {
-                handleReportGroup(e);
-              }}
+              options={reportGroups}
+              onChange={handleReportGroup}
               value={watch('reportGroupId')}
             />
-
             {errors?.reportGroupId?.message && (
               <FormHelperText error>{error(errors?.reportGroupId?.message)}</FormHelperText>
             )}
           </div>
+
           <div className="mt-4">
             <FormLabel>{t('report.allowTypes')}</FormLabel>
             <div className="flex gap-4">
@@ -149,12 +161,13 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
               ))}
             </div>
           </div>
+
           <div className="mt-4">
             <FormLabel required>{t('report.status')}</FormLabel>
             <SelectPortal
               placeholder={t('report.status')}
-              options={reportTypeStatus ?? []}
-              onChange={(e: any) => handleChangeStatus(e)}
+              options={reportTypeStatus}
+              onChange={handleChangeStatus}
               value={watch('status')}
             />
             {errors?.status?.message && <FormHelperText error>{error(errors?.status?.message)}</FormHelperText>}
@@ -162,11 +175,13 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
 
           <div className="mt-4">
             <FormLabel>{t('report.uploadFile')}</FormLabel>
-            <div className="flex justify-start ">
+            {id && <Checkbox {...register('isChangeTemplate')} label={t('IsChangeTemplate')} />}
+            <div className="flex justify-start">
               <UploadFileTemplate
                 fileInfo={watch('fileInfo')}
                 setFileInfo={onHandleSetFileInfor}
                 allowTypes={watch('allowTypes') || []}
+                templateName={watch('templateName')}
               />
             </div>
           </div>

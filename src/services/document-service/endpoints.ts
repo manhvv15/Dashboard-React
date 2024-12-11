@@ -6,6 +6,7 @@ export const report = {
   create: `${PREFIX}/reports`,
   update: `${PREFIX}/reports/{id}`,
   delete: `${PREFIX}/reports/{id}`,
+  getDownloadFile: `${PREFIX}/reports/{id}/download`,
 };
 export const reportGroup = {
   getAll: `${PREFIX}/report-groups`,

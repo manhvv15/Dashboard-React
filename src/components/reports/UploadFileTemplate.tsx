@@ -14,19 +14,22 @@ type FileInfo = {
   name: string;
   uri: string;
   contentType: string;
+  size: number;
 } | null;
 
 interface IProps {
   fileInfo: FileInfo;
   setFileInfo: React.Dispatch<React.SetStateAction<FileInfo>>;
   allowTypes: string[];
+  templateName: string;
 }
 
-const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes }: IProps) => {
+const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes, templateName }: IProps) => {
   const { showToast } = useApp();
   const { t: common } = useTranslation(LocaleNamespace.Common);
   const [isUploading, setIsUploading] = useState(false);
-  const [dragging, setDragging] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [size, setSize] = useState(0);
 
   const accept = flatMap(
     allowTypes.map((type) => {
@@ -47,7 +50,7 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes }: IProps) => {
     mutationFn: getTemplateFile,
     onSuccess: (data: AxiosResponse<UploadFile>) => {
       const { name, uri, contentType } = data.data;
-      setFileInfo({ name, uri, contentType });
+      setFileInfo({ name, uri, contentType, size });
       setIsUploading(false);
       showToast({
         type: 'success',
@@ -74,6 +77,7 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes }: IProps) => {
       const validated = await ValidFile(file, options);
 
       if (validated.isValid) {
+        setSize(file.size);
         setIsUploading(true);
         const formData = new FormData();
         formData.append('File', file);
@@ -114,16 +118,16 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes }: IProps) => {
     }
   };
 
-  const handleDragEnter = () => {
-    setDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
-
   const handleRemoveFile = () => {
+    setIsDeleting(true);
     setFileInfo(null);
+    setIsDeleting(false);
+  };
+
+  const handleFileClick = () => {
+    if (!isDeleting) {
+      document.getElementById('fileInput')?.click();
+    }
   };
 
   return (
@@ -131,12 +135,10 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes }: IProps) => {
       <div className="input-group mb-4">
         <div
           className={`pt-3 pb-3 pl-4 pr-4 border border-dashed cursor-pointer ${
-            dragging ? 'border-red-700' : 'border-[#DDDDDD]'
+            isDeleting || isUploading ? 'cursor-not-allowed' : ''
           }`}
-          onClick={() => document.getElementById('fileInput')?.click()}
+          onClick={handleFileClick}
           onDragOver={(e) => e.preventDefault()}
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           {fileInfo ? (
@@ -158,12 +160,14 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes }: IProps) => {
               </p>
             </div>
           )}
+
           {!fileInfo && (
             <input
               id="fileInput"
               type="file"
               accept={accept}
               multiple
+              name={templateName || 'fileInput'}
               onChange={onChangeFiles}
               className="border-0 clip-rect-[0px_0px_0px_0px] clip-path-inset-[50%] h-[1px] m-[-1px_-1px_-1px_0px] overflow-hidden p-0 absolute w-[1px] whitespace-nowrap"
             />
