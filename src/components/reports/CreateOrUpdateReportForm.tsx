@@ -1,4 +1,4 @@
-import { Checkbox, FormHelperText, FormLabel, Input, SelectPortal } from '@ichiba/ichiba-core-ui';
+import { FormHelperText, FormLabel, Input, SelectPortal } from '@ichiba/ichiba-core-ui';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { useFormContext } from 'react-hook-form';
@@ -8,7 +8,6 @@ import { FormReport, ReportByIdResponse, ReportStatusEnum } from '@/types/docume
 import { getReportById } from '@/services/document-service/report';
 import { getAllReportGroups } from '@/services/document-service/reportGroup';
 import UploadFileTemplate from './UploadFileTemplate';
-import { useEffect, useRef } from 'react';
 
 interface IProps {
   id?: string;
@@ -88,20 +87,7 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
     { label: 'Active', value: ReportStatusEnum.Active },
     { label: 'Deactive', value: ReportStatusEnum.Deactivate },
   ];
-  const initialFileName = useRef<string | null>(null);
 
-  useEffect(() => {
-    const fileInfo = watch('fileInfo');
-    if (!initialFileName.current) {
-      initialFileName.current = fileInfo?.name ?? null;
-    }
-
-    if (fileInfo?.name !== initialFileName.current) {
-      setValue('isChangeTemplate', true);
-    } else {
-      setValue('isChangeTemplate', false);
-    }
-  }, [watch('fileInfo'), setValue]);
   return (
     <div className="scroll h-full overflow-y-auto flex justify-center flex-col w-full max-w-[1200px]">
       <div className="bg-ic-white-6s p-4 rounded-lg">
@@ -174,8 +160,7 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
           </div>
 
           <div className="mt-4">
-            <FormLabel>{t('report.uploadFile')}</FormLabel>
-            {id && <Checkbox {...register('isChangeTemplate')} label={t('IsChangeTemplate')} />}
+            <FormLabel required>{t('report.uploadFile')}</FormLabel>
             <div className="flex justify-start">
               <UploadFileTemplate
                 fileInfo={watch('fileInfo')}
@@ -184,6 +169,7 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
                 templateName={watch('templateName')}
               />
             </div>
+            {errors?.fileInfo?.message && <FormHelperText error>{error(errors?.fileInfo?.message)}</FormHelperText>}
           </div>
         </div>
       </div>

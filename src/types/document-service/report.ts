@@ -24,9 +24,7 @@ export interface FormReport {
   reportGroupName: string;
   templateName: string;
   status: ReportStatusEnum;
-  // allowTypes?: Array<'PDF' | 'XLSX'>;
   allowTypes?: string[];
-  isChangeTemplate: boolean;
   FilePath: string;
   fileInfo: {
     name: string;

@@ -616,6 +616,8 @@
   "report.status": "Status",
   "report.allowTypes": "Allow types",
   "report.uploadFile": "Upload file",
+  "uploadFileSuccess": "File uploaded successfully",
+  "uploadFileFailed": "File uploaded failed",
   "report.file": "File",
   "report.delete": "Delete report",
   "codeOrNameExsited" :"Code or name exsited",

@@ -28,7 +28,6 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes, templateName }:
   const { showToast } = useApp();
   const { t: common } = useTranslation(LocaleNamespace.Common);
   const [isUploading, setIsUploading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [size, setSize] = useState(0);
 
   const accept = flatMap(
@@ -118,63 +117,48 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes, templateName }:
     }
   };
 
-  const handleRemoveFile = () => {
-    setIsDeleting(true);
-    setFileInfo(null);
-    setIsDeleting(false);
-  };
-
-  const handleFileClick = () => {
-    if (!isDeleting) {
-      document.getElementById('fileInput')?.click();
-    }
+  const handleFileClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    document.getElementById('fileInput')?.click();
   };
 
   return (
     <div className="relative mt-4 flex flex-col">
-      <div className="input-group mb-4">
-        <div
-          className={`pt-3 pb-3 pl-4 pr-4 border border-dashed cursor-pointer ${
-            isDeleting || isUploading ? 'cursor-not-allowed' : ''
-          }`}
-          onClick={handleFileClick}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDrop}
-        >
-          {fileInfo ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <SvgIcon icon="uploadfile" width={20} height={20} className="text-ic-primary-6s mr-2" />
-                <span>{fileInfo.name}</span>
-              </div>
-              <button onClick={handleRemoveFile} className="text-red-500 ml-4 p-1 rounded-full hover:bg-red-100">
-                <SvgIcon icon="delete" width={16} height={16} />
-              </button>
+      <div
+        className={`pt-3 pb-3 pl-4 pr-4 border border-dashed cursor-pointer ${isUploading ? 'cursor-not-allowed' : ''}`}
+        onClick={handleFileClick}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
+        {fileInfo ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span>{fileInfo.name}</span>
             </div>
-          ) : (
-            <div className="mx-auto flex flex-col items-center text-center max-w-[400px]">
-              <SvgIcon icon="uploadfile" width={40} height={40} className="text-ic-primary-6s mt-10" />
-              <p className="mt-2 font-medium">Drop your file here, or browse</p>
-              <p className="mt-2 text-opacity-100 text-gray-600">
-                (File size must not exceed 5 MB and only PDF, DOCX, XLSX file formats are allowed to upload.)
-              </p>
-            </div>
-          )}
+            <button onClick={handleFileClick} className="ml-4 p-1 rounded-full">
+              <SvgIcon icon="uploadfile" width={16} height={16} className="text-ic-primary-6s" />
+            </button>
+          </div>
+        ) : (
+          <div className="mx-auto flex flex-col items-center text-center max-w-[400px]">
+            <SvgIcon icon="uploadfile" width={40} height={40} className="text-ic-primary-6s mt-10" />
+            <p className="mt-2 font-medium">Drop your file here, or browse</p>
+            <p className="mt-2 text-opacity-100 text-gray-600">
+              (File size must not exceed 5 MB and only PDF, DOCX, XLSX file formats are allowed to upload.)
+            </p>
+          </div>
+        )}
 
-          {!fileInfo && (
-            <input
-              id="fileInput"
-              type="file"
-              accept={accept}
-              multiple
-              name={templateName || 'fileInput'}
-              onChange={onChangeFiles}
-              className="border-0 clip-rect-[0px_0px_0px_0px] clip-path-inset-[50%] h-[1px] m-[-1px_-1px_-1px_0px] overflow-hidden p-0 absolute w-[1px] whitespace-nowrap"
-            />
-          )}
-        </div>
+        <input
+          id="fileInput"
+          type="file"
+          accept={accept}
+          multiple
+          name={templateName || 'fileInput'}
+          onChange={onChangeFiles}
+          className="border-0 clip-rect-[0px_0px_0px_0px] clip-path-inset-[50%] h-[1px] m-[-1px_-1px_-1px_0px] overflow-hidden p-0 absolute w-[1px] whitespace-nowrap"
+        />
       </div>
-
       {isUploading && <div className="loading">Uploading...</div>}
     </div>
   );

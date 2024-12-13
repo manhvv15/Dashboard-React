@@ -71,7 +71,7 @@ const TableReport = ({ items }: Props) => {
       {
         headerName: common('code'),
         cellClass: 'flex',
-        width: 160,
+        width: 270,
         cellRenderer: ({ data }) => {
           return (
             <div className="text-sm font-normal leading-5 text-ic-ink-6s h-full flex flex-col">{data.code || '-'}</div>
@@ -81,7 +81,7 @@ const TableReport = ({ items }: Props) => {
       {
         headerName: common('name'),
         cellClass: 'flex',
-        width: 180,
+        width: 220,
         cellRenderer: ({ data }) => {
           return (
             <div className="text-sm font-normal leading-5 text-ic-ink-6s h-full flex flex-col overflow-hidden">
@@ -92,7 +92,7 @@ const TableReport = ({ items }: Props) => {
       },
       {
         headerName: common('report.reportGroupName'),
-        width: 300,
+        width: 220,
         cellClass: 'flex',
         cellRenderer: ({ data }) => {
           return (
@@ -104,7 +104,7 @@ const TableReport = ({ items }: Props) => {
       },
       {
         headerName: common('status'),
-        width: 90,
+        width: 120,
         cellClass: 'flex justify-center',
         headerClass: 'text-center',
         cellRenderer: ({ data }) => {
@@ -117,7 +117,7 @@ const TableReport = ({ items }: Props) => {
       },
       {
         headerName: common('report.allowTypes'),
-        width: 240,
+        width: 200,
         cellClass: 'flex',
         flex: 1,
         cellRenderer: ({ data }) => {
