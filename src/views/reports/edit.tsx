@@ -71,6 +71,7 @@ const UpdateReport = () => {
       name: data.name,
       status: parseInt(data.status.toString()),
       reportGroupId: data.reportGroupId,
+      applicationId: data.applicationId,
       allowTypes: data.allowTypes ?? [],
       fileInfo: data.fileInfo,
     } as UpdateReportRequest;

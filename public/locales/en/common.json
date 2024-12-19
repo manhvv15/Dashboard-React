@@ -133,6 +133,7 @@
   "report.name": "Name",
   "report.code": "Code",
   "report.reportGroupName": "Report group name",
+  "report.applicationName": "Application name",
   "report.status": "Status",
   "report.allowTypes": "Allow types",
   "report.uploadFile": "Upload file",

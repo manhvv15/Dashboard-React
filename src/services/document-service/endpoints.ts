@@ -20,3 +20,7 @@ export const template = {
   getAll: `${PREFIX}/templates`,
 };
 export const storageFile = `/api/storage/files`;
+
+export const applications = {
+  getAll: `${PREFIX}/applications`,
+};

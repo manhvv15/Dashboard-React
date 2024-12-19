@@ -5,6 +5,7 @@ export interface ReportPagingResponse {
   code: string;
   name: string;
   reportGroupName: string;
+  applicationName: string;
   status: number;
   allowTypes: string[];
 }
@@ -21,6 +22,7 @@ export interface FormReport {
   code: string;
   name: string;
   reportGroupId: string;
+  applicationId: string;
   reportGroupName: string;
   templateName: string;
   status: ReportStatusEnum;
@@ -38,6 +40,7 @@ export interface ReportByIdResponse {
   code: string;
   name: string;
   reportGroupId: string;
+  applicationId: string;
   reportGroupName: string;
   status: ReportStatusEnum;
   allowTypes?: string[];
@@ -80,4 +83,13 @@ export interface ApiPaginationResponse<T> {
   totalRecords: number;
   pageNumber: number;
   pageSize: number;
+}
+
+export interface ApplicationItem {
+  id: string;
+  name: string;
+}
+
+export interface ApplicationData {
+  items: ApplicationItem[];
 }

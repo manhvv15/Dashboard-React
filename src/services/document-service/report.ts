@@ -1,13 +1,15 @@
 import { PageResult } from '@/types/user-management/common';
 import { instance, instanceDocument } from '../xhr';
 import {
+  ApiPaginationResponse,
+  ApplicationItem,
   CreateReportRequest,
   ReportByIdResponse,
   ReportPagingRequest,
   ReportPagingResponse,
   UpdateReportRequest,
 } from '@/types/document-service/report';
-import { report } from './endpoints';
+import { applications, report } from './endpoints';
 import { AxiosResponse } from 'axios';
 import { compileRequestURL } from '@/utils/common';
 import { UploadFile } from '@/types/user-management/application';
@@ -39,4 +41,7 @@ export const deleteReport = (id: string): Promise<AxiosResponse> => {
 };
 export const getTemplateFile = (file: FormData): Promise<AxiosResponse<UploadFile>> => {
   return instance.post(storage, file);
+};
+export const getApplications = (): Promise<AxiosResponse<ApiPaginationResponse<ApplicationItem>>> => {
+  return instanceDocument.get(applications.getAll);
 };

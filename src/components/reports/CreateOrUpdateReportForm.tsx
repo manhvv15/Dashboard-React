@@ -5,7 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { LocaleNamespace } from '@/constants/enums/common';
 import { FormReport, ReportByIdResponse, ReportStatusEnum } from '@/types/document-service/report';
-import { getReportById } from '@/services/document-service/report';
+import { getApplications, getReportById } from '@/services/document-service/report';
 import { getAllReportGroups } from '@/services/document-service/reportGroup';
 import UploadFileTemplate from './UploadFileTemplate';
 
@@ -25,6 +25,7 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
       setValue('name', data.data.name);
       setValue('fileInfo', data.data.fileInfo);
       setValue('reportGroupName', data.data.reportGroupName);
+      setValue('applicationId', data.data.applicationId);
       setValue('reportGroupId', data.data.reportGroupId);
       setValue('status', data.data.status);
       setValue('allowTypes', data.data.allowTypes);
@@ -40,6 +41,9 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
   const handleReportGroup = (data?: string) => {
     setValue('reportGroupId', data ?? '');
   };
+  const handleApplication = (data?: string) => {
+    setValue('applicationId', data ?? '');
+  };
 
   const { data: reportGroupsData } = useQuery({
     queryKey: ['getAllReportGroups'],
@@ -49,8 +53,23 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
     },
     retry: false,
   });
+
   const reportGroups = reportGroupsData?.items
     ? reportGroupsData.items.map((i) => ({
+        label: i.name,
+        value: i.id,
+      }))
+    : [];
+  const { data: applicationData } = useQuery({
+    queryKey: ['getApplications'],
+    queryFn: async () => {
+      const response = await getApplications();
+      return response.data;
+    },
+    retry: false,
+  });
+  const applications = applicationData?.items
+    ? applicationData.items.map((i) => ({
         label: i.name,
         value: i.id,
       }))
@@ -117,6 +136,18 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
               name="code"
             />
             {errors?.code?.message && <FormHelperText error>{t(errors.code.message)}</FormHelperText>}
+          </div>
+          <div className="mt-4">
+            <FormLabel required>{t('report.applicationName')}</FormLabel>
+            <SelectPortal
+              placeholder={t('report.applicationName')}
+              options={applications}
+              onChange={handleApplication}
+              value={watch('applicationId')}
+            />
+            {errors?.applicationId?.message && (
+              <FormHelperText error>{error(errors?.applicationId?.message)}</FormHelperText>
+            )}
           </div>
           <div className="mt-4">
             <FormLabel required>{t('report.reportGroupName')}</FormLabel>

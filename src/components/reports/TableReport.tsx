@@ -91,6 +91,18 @@ const TableReport = ({ items }: Props) => {
         },
       },
       {
+        headerName: common('report.applicationName'),
+        width: 220,
+        cellClass: 'flex',
+        cellRenderer: ({ data }) => {
+          return (
+            <div className="text-sm font-normal leading-5 text-ic-ink-6s h-full flex flex-col">
+              <span className="break-words">{data.applicationName || '-'}</span>
+            </div>
+          );
+        },
+      },
+      {
         headerName: common('report.reportGroupName'),
         width: 220,
         cellClass: 'flex',

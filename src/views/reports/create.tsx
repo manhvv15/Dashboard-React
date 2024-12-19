@@ -35,6 +35,7 @@ const CreateReport = () => {
         .max(250, error('role.form.message.codeOrNameInValid'))
         .trim(),
       reportGroupId: yup.string().required(error('fieldRequired')).trim(),
+      applicationId: yup.string().required(error('fieldRequired')).trim(),
       status: yup.string().required(error('fieldRequired')).trim(),
       fileInfo: yup.object().required(error('fieldRequired')),
     })
@@ -68,6 +69,7 @@ const CreateReport = () => {
       name: data.name,
       status: parseInt(data.status.toString()),
       reportGroupId: data.reportGroupId,
+      applicationId: data.applicationId,
       allowTypes: data.allowTypes ?? [],
       fileInfo: data.fileInfo,
     } as CreateReportRequest;
