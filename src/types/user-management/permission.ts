@@ -53,3 +53,15 @@ export interface UpdatePermissionRequest {
   method: string | null;
   endpoint: string | null;
 }
+
+export interface PermissionMultiple {
+  applicationId: string;
+  objectId: string;
+  list: Array<{
+    actionId: string;
+    method: string | null;
+    endpoint: string | null;
+  }>;
+}
+
+export interface CreatePermissionMultiple extends PermissionMultiple {}
