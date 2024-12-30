@@ -36,6 +36,7 @@ const UpdateReport = () => {
         .trim(),
       reportGroupId: yup.string().required(error('fieldRequired')).trim(),
       status: yup.string().required(error('fieldRequired')).trim(),
+      fileInfo: yup.object().required(error('fieldRequired')),
     })
     .required();
 
@@ -70,7 +71,9 @@ const UpdateReport = () => {
       name: data.name,
       status: parseInt(data.status.toString()),
       reportGroupId: data.reportGroupId,
+      applicationId: data.applicationId,
       allowTypes: data.allowTypes ?? [],
+      fileInfo: data.fileInfo,
     } as UpdateReportRequest;
     if (!id) {
       showToast({

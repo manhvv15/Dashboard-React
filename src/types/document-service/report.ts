@@ -1,8 +1,11 @@
+import { StatusEnum } from '../user-management/workspace';
+
 export interface ReportPagingResponse {
   id: string;
   code: string;
   name: string;
   reportGroupName: string;
+  applicationName: string;
   status: number;
   allowTypes: string[];
 }
@@ -13,20 +16,23 @@ export interface PaginationReportRequest {
   pageNumber: number;
   pageSize: number;
   textSearch?: string;
+  status?: StatusEnum[] | null | undefined;
 }
 export interface FormReport {
   code: string;
   name: string;
   reportGroupId: string;
+  applicationId: string;
   reportGroupName: string;
+  templateName: string;
   status: ReportStatusEnum;
   allowTypes?: string[];
-  isFile: boolean;
   FilePath: string;
   fileInfo: {
     name: string;
     uri: string;
     contentType: string;
+    size: number;
   } | null;
 }
 export interface ReportByIdResponse {
@@ -34,9 +40,22 @@ export interface ReportByIdResponse {
   code: string;
   name: string;
   reportGroupId: string;
+  applicationId: string;
   reportGroupName: string;
   status: ReportStatusEnum;
   allowTypes?: string[];
+  fileInfo: {
+    name: string;
+    uri: string;
+    contentType: string;
+    size: number;
+  } | null;
+}
+export interface FileDownloadResponse {
+  name: string;
+  type: string;
+  link: string;
+  fileContent: string;
 }
 export enum ReportStatusEnum {
   Active = 0,
@@ -64,4 +83,13 @@ export interface ApiPaginationResponse<T> {
   totalRecords: number;
   pageNumber: number;
   pageSize: number;
+}
+
+export interface ApplicationItem {
+  id: string;
+  name: string;
+}
+
+export interface ApplicationData {
+  items: ApplicationItem[];
 }

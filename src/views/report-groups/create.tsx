@@ -10,11 +10,11 @@ import SvgIcon from '@/components/commons/SvgIcon';
 import LayoutSection from '@/components/layouts/layout-section';
 import { LocaleNamespace } from '@/constants/enums/common';
 import { useApp } from '@/hooks/use-app';
-import { CreateReportRequest, FormReport } from '@/types/document-service/report';
-import { createReport } from '@/services/document-service/report';
-import { CreateOrUpdateReportForm } from '@/components/reports/CreateOrUpdateReportForm';
+import { CreateReportGroupRequest, FormReportGroup } from '@/types/document-service/report-group';
+import { createReportGroup } from '@/services/document-service/reportGroup';
+import { CreateOrUpdateReportGroupForm } from '@/components/report-groups/CreateOrUpdateReportGroupForm';
 
-const CreateReport = () => {
+const CreateReportGroup = () => {
   const { t: error } = useTranslation(LocaleNamespace.Error);
   const navigate = useNavigate();
   const { showToast } = useApp();
@@ -34,26 +34,24 @@ const CreateReport = () => {
         .min(3, error('role.form.message.codeOrNameInValid'))
         .max(250, error('role.form.message.codeOrNameInValid'))
         .trim(),
-      reportGroupId: yup.string().required(error('fieldRequired')).trim(),
-      applicationId: yup.string().required(error('fieldRequired')).trim(),
+      displayOrder: yup.string().required(error('fieldRequired')).trim(),
       status: yup.string().required(error('fieldRequired')).trim(),
-      fileInfo: yup.object().required(error('fieldRequired')),
     })
     .required();
 
-  const methods = useForm<FormReport>({
+  const methods = useForm<FormReportGroup>({
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
 
-  const createReportMutation = useMutation({
-    mutationFn: createReport,
+  const createReportGroupMutation = useMutation({
+    mutationFn: createReportGroup,
     onSuccess: () => {
       showToast({
         type: 'success',
-        summary: t('reports.createReportSuccessfully'),
+        summary: t('reportgroups.createReportGroupSuccessfully'),
       });
-      navigate('/environment-settings/reports');
+      navigate('/environment-settings/report-groups');
     },
     onError: () => {
       showToast({
@@ -63,17 +61,15 @@ const CreateReport = () => {
     },
   });
 
-  const submitData = (data: FormReport) => {
+  const submitData = (data: FormReportGroup) => {
     const request = {
       code: data.code,
       name: data.name,
+      description: data.description,
+      displayOrder: data.displayOrder,
       status: parseInt(data.status.toString()),
-      reportGroupId: data.reportGroupId,
-      applicationId: data.applicationId,
-      allowTypes: data.allowTypes ?? [],
-      fileInfo: data.fileInfo,
-    } as CreateReportRequest;
-    createReportMutation.mutate(request);
+    } as CreateReportGroupRequest;
+    createReportGroupMutation.mutate(request);
   };
 
   return (
@@ -81,7 +77,7 @@ const CreateReport = () => {
       label={
         <button onClick={() => navigate(-1)} className="flex items-center">
           <SvgIcon icon="arrow-left" width={24} height={24} className="text-ic-ink-6s" />
-          <span className="ml-1 text-base font-medium leading-6 text-ic-ink-6s">{t('report.create')}</span>
+          <span className="ml-1 text-base font-medium leading-6 text-ic-ink-6s">{t('reportgroup.create')}</span>
         </button>
       }
       right={
@@ -101,7 +97,7 @@ const CreateReport = () => {
       <div className="scroll h-[calc(100vh_-_100px)] flex flex-col overflow-y-auto">
         <div className="flex justify-center p-6">
           <FormProvider {...methods}>
-            <CreateOrUpdateReportForm />
+            <CreateOrUpdateReportGroupForm />
           </FormProvider>
         </div>
       </div>
@@ -109,4 +105,4 @@ const CreateReport = () => {
   );
 };
 
-export default CreateReport;
+export default CreateReportGroup;

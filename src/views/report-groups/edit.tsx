@@ -4,19 +4,20 @@ import { useMutation } from '@tanstack/react-query';
 import { t } from 'i18next';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as yup from 'yup';
 import SvgIcon from '@/components/commons/SvgIcon';
 import LayoutSection from '@/components/layouts/layout-section';
 import { LocaleNamespace } from '@/constants/enums/common';
 import { useApp } from '@/hooks/use-app';
-import { CreateReportRequest, FormReport } from '@/types/document-service/report';
-import { createReport } from '@/services/document-service/report';
-import { CreateOrUpdateReportForm } from '@/components/reports/CreateOrUpdateReportForm';
+import { FormReportGroup, UpdateReportGroupRequest } from '@/types/document-service/report-group';
+import { updateReportGroup } from '@/services/document-service/reportGroup';
+import { CreateOrUpdateReportGroupForm } from '@/components/report-groups/CreateOrUpdateReportGroupForm';
 
-const CreateReport = () => {
+const UpdateReportGroup = () => {
   const { t: error } = useTranslation(LocaleNamespace.Error);
   const navigate = useNavigate();
+  const { id } = useParams();
   const { showToast } = useApp();
 
   const schema = yup
@@ -34,26 +35,26 @@ const CreateReport = () => {
         .min(3, error('role.form.message.codeOrNameInValid'))
         .max(250, error('role.form.message.codeOrNameInValid'))
         .trim(),
-      reportGroupId: yup.string().required(error('fieldRequired')).trim(),
-      applicationId: yup.string().required(error('fieldRequired')).trim(),
+      displayOrder: yup.string().required(error('fieldRequired')).trim(),
       status: yup.string().required(error('fieldRequired')).trim(),
-      fileInfo: yup.object().required(error('fieldRequired')),
     })
     .required();
 
-  const methods = useForm<FormReport>({
+  const methods = useForm<FormReportGroup>({
     mode: 'onBlur',
     resolver: yupResolver(schema),
   });
 
-  const createReportMutation = useMutation({
-    mutationFn: createReport,
+  const updateReportGroupMutation = useMutation({
+    mutationFn: (params: { id: string; data: UpdateReportGroupRequest }) => {
+      return updateReportGroup(params.id, params.data);
+    },
     onSuccess: () => {
       showToast({
         type: 'success',
-        summary: t('reports.createReportSuccessfully'),
+        summary: t('reportgroups.editReportGroupSuccessfully'),
       });
-      navigate('/environment-settings/reports');
+      navigate('/environment-settings/report-groups');
     },
     onError: () => {
       showToast({
@@ -63,25 +64,30 @@ const CreateReport = () => {
     },
   });
 
-  const submitData = (data: FormReport) => {
+  const submitData = (data: FormReportGroup) => {
     const request = {
+      id: id,
       code: data.code,
       name: data.name,
+      description: data.description,
+      displayOrder: data.displayOrder,
       status: parseInt(data.status.toString()),
-      reportGroupId: data.reportGroupId,
-      applicationId: data.applicationId,
-      allowTypes: data.allowTypes ?? [],
-      fileInfo: data.fileInfo,
-    } as CreateReportRequest;
-    createReportMutation.mutate(request);
+    } as UpdateReportGroupRequest;
+    if (!id) {
+      showToast({
+        type: 'error',
+        summary: 'Report ID is missing!',
+      });
+      return;
+    }
+    updateReportGroupMutation.mutate({ id, data: request });
   };
-
   return (
     <LayoutSection
       label={
         <button onClick={() => navigate(-1)} className="flex items-center">
           <SvgIcon icon="arrow-left" width={24} height={24} className="text-ic-ink-6s" />
-          <span className="ml-1 text-base font-medium leading-6 text-ic-ink-6s">{t('report.create')}</span>
+          <span className="ml-1 text-base font-medium leading-6 text-ic-ink-6s">{t('reportgroup.edit')}</span>
         </button>
       }
       right={
@@ -101,7 +107,7 @@ const CreateReport = () => {
       <div className="scroll h-[calc(100vh_-_100px)] flex flex-col overflow-y-auto">
         <div className="flex justify-center p-6">
           <FormProvider {...methods}>
-            <CreateOrUpdateReportForm />
+            <CreateOrUpdateReportGroupForm id={id} />
           </FormProvider>
         </div>
       </div>
@@ -109,4 +115,4 @@ const CreateReport = () => {
   );
 };
 
-export default CreateReport;
+export default UpdateReportGroup;

@@ -14,6 +14,7 @@ export const ValidFile = async (file: File, options?: IOptionValidate) => {
     let isValidSize = true;
     let isValidExtension = true;
     let isValidDimensions = true;
+
     if (options?.type && options?.type.length > 0) {
       const regex = new RegExp(`.(${options?.type.join('|')})$`);
       if (!file.name.match(regex)) {

@@ -1,13 +1,14 @@
 import { PageResult } from '@/types/user-management/common';
 import { instance, instanceDocument } from '../xhr';
 import {
+  ApplicationItem,
   CreateReportRequest,
   ReportByIdResponse,
   ReportPagingRequest,
   ReportPagingResponse,
   UpdateReportRequest,
 } from '@/types/document-service/report';
-import { report } from './endpoints';
+import { applications, report } from './endpoints';
 import { AxiosResponse } from 'axios';
 import { compileRequestURL } from '@/utils/common';
 import { UploadFile } from '@/types/user-management/application';
@@ -29,10 +30,16 @@ export const updateReport = (id: string, data: UpdateReportRequest): Promise<Axi
   const url = report.update.replace('{id}', id);
   return instanceDocument.put(url, data);
 };
-
+export const downloadReport = (id: string): Promise<AxiosResponse> => {
+  const url = report.getDownloadFile.replace('{id}', id);
+  return instanceDocument.get(url);
+};
 export const deleteReport = (id: string): Promise<AxiosResponse> => {
   return instanceDocument.delete(compileRequestURL(report.delete, { id: id }));
 };
 export const getTemplateFile = (file: FormData): Promise<AxiosResponse<UploadFile>> => {
   return instance.post(storage, file);
+};
+export const getApplications = (): Promise<AxiosResponse<ApplicationItem[]>> => {
+  return instanceDocument.get<ApplicationItem[]>(applications.getAll);
 };

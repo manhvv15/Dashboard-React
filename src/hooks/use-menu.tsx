@@ -96,6 +96,13 @@ export const useMenu = () => {
         isShow: isGrantPermission(OBJECTS.REPORTS, ACTIONS.VIEW),
       },
       {
+        label: t('environmentSettings.report-groups'),
+        children: [],
+        href: '/environment-settings/report-groups',
+        icon: <ChartSquareIcon width={24} height={24} />,
+        isShow: isGrantPermission(OBJECTS.REPORT_GROUPS, ACTIONS.VIEW),
+      },
+      {
         label: t('environmentSettings.branding'),
         children: [],
         href: '/environment-settings/branding',

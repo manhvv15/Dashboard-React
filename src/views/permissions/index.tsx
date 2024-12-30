@@ -18,6 +18,7 @@ import { OrganizationPagingRequest } from '@/types/user-management/organization'
 import { PermissionPagingRequest } from '@/types/user-management/permission';
 import { SetStatePropertyFunc } from '@/utils/common';
 import { PAGE_NUMBER_DEFAULT, PAGE_SIZE_DEFAULT } from '@/utils/constants';
+import { useNavigate } from 'react-router-dom';
 
 const PermissionManagement = () => {
   const { t } = useTranslation(LocaleNamespace.Common);
@@ -53,17 +54,26 @@ const PermissionManagement = () => {
   const handleSizeChange = (size: number) => {
     filterHandler('pageSize', size);
   };
-
+  const navigate = useNavigate();
+  const handleCreate = () => {
+    navigate('create');
+  };
   return (
     <>
       <LayoutSection
         label={t('permissions')}
         right={
           <AccessibleComponent object={OBJECTS.PERMISSIONS} action={ACTIONS.CREATE}>
-            <Button onClick={() => setIsShowModelCreate(true)}>
-              <SvgIcon icon="plus" width={24} height={24} />
-              <span className="ml-1">{t('create')}</span>
-            </Button>
+            <div className="flex space-x-4">
+              <Button onClick={() => setIsShowModelCreate(true)}>
+                <SvgIcon icon="plus" width={24} height={24} />
+                <span className="ml-1">{t('create')}</span>
+              </Button>
+              <Button onClick={() => handleCreate()}>
+                <SvgIcon icon="plus" width={24} height={24} />
+                <span className="ml-1">{t('createMultiple')}</span>
+              </Button>
+            </div>
           </AccessibleComponent>
         }
       >
@@ -88,6 +98,11 @@ const PermissionManagement = () => {
           </div>
         </LoadingOverlay>
         <ModalCreateAndEdit type="create" open={isShowModelCreate} setOpen={setIsShowModelCreate} />
+        {/* <ModalCreateAndEditMultiple
+          type="create"
+          open={isShowModelCreateMultiple}
+          setOpen={setIsShowModelCreateMultiple}
+        /> */}
       </LayoutSection>
     </>
   );

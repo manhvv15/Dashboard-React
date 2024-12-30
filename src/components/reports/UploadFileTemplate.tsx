@@ -6,40 +6,51 @@ import { ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AxiosResponse } from 'axios';
 import { UploadFile } from '@/types/user-management/application';
+import { ValidFile } from '@/utils/uploadFile';
+import { flatMap } from 'lodash';
+import SvgIcon from '../commons/SvgIcon';
 
 type FileInfo = {
   name: string;
   uri: string;
   contentType: string;
+  size: number;
 } | null;
 
 interface IProps {
   fileInfo: FileInfo;
   setFileInfo: React.Dispatch<React.SetStateAction<FileInfo>>;
+  allowTypes: string[];
+  templateName: string;
 }
-const UploadFileTemplate = ({ fileInfo, setFileInfo }: IProps) => {
+
+const UploadFileTemplate = ({ fileInfo, setFileInfo, allowTypes, templateName }: IProps) => {
   const { showToast } = useApp();
   const { t: common } = useTranslation(LocaleNamespace.Common);
   const [isUploading, setIsUploading] = useState(false);
+  const [size, setSize] = useState(0);
 
-  const accept = '.jpg,.png,.jpeg,.pdf,.docx,.xlsx';
+  const accept = flatMap(
+    allowTypes.map((type) => {
+      switch (type) {
+        case 'XLSX':
+          return ['.xls', '.xlsx'];
+        case 'DOCX':
+          return ['.doc', '.docx'];
+        case 'PDF':
+          return ['.pdf'];
+        default:
+          return [];
+      }
+    }),
+  ).join(',');
 
-  const getTemplateFileMutation = useMutation({
+  const { mutate: uploadFile } = useMutation({
     mutationFn: getTemplateFile,
-    onMutate: () => {
-      setIsUploading(true);
-      setFileInfo(null);
-    },
     onSuccess: (data: AxiosResponse<UploadFile>) => {
       const { name, uri, contentType } = data.data;
-      setFileInfo({
-        name,
-        uri,
-        contentType,
-      });
-
+      setFileInfo({ name, uri, contentType, size });
       setIsUploading(false);
-
       showToast({
         type: 'success',
         summary: common('uploadFileSuccess'),
@@ -47,7 +58,6 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo }: IProps) => {
     },
     onError: () => {
       setIsUploading(false);
-
       showToast({
         type: 'error',
         summary: common('uploadFileFailed'),
@@ -58,40 +68,100 @@ const UploadFileTemplate = ({ fileInfo, setFileInfo }: IProps) => {
   const onChangeFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0] as File;
-      const formData = new FormData();
-      formData.append('File', file);
-      getTemplateFileMutation.mutate(formData);
+      const options = {
+        limitCapacity: 5,
+        type: allowTypes.map((type) => type.toLowerCase()),
+      };
+
+      const validated = await ValidFile(file, options);
+
+      if (validated.isValid) {
+        setSize(file.size);
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('File', file);
+        uploadFile(formData);
+      } else {
+        showToast({
+          type: 'error',
+          summary: common('invalidFileType'),
+        });
+      }
     }
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const options = {
+        limitCapacity: 5,
+        type: allowTypes.map((type) => type.toLowerCase()),
+      };
+
+      const validated = await ValidFile(file, options);
+
+      if (validated.isValid) {
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('File', file);
+        uploadFile(formData);
+      } else {
+        showToast({
+          type: 'error',
+          summary: common('invalidFileType'),
+        });
+      }
+    }
+  };
+
+  const handleFileClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    document.getElementById('fileInput')?.click();
   };
 
   return (
     <div className="relative mt-4 flex flex-col">
-      <div className="input-group mb-4">
-        <input id="file" type="file" accept={accept} onChange={onChangeFiles} />
+      <div
+        className={`pt-3 pb-3 pl-4 pr-4 border border-dashed cursor-pointer ${isUploading ? 'cursor-not-allowed' : ''}`}
+        onClick={handleFileClick}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
+        {fileInfo ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <span>{fileInfo.name}</span>
+            </div>
+            <button onClick={handleFileClick} className="ml-4 p-1 rounded-full">
+              <SvgIcon icon="uploadfile" width={16} height={16} className="text-ic-primary-6s" />
+            </button>
+          </div>
+        ) : (
+          <div className="mx-auto flex flex-col items-center text-center max-w-[400px]">
+            <SvgIcon icon="uploadfile" width={40} height={40} className="text-ic-primary-6s mt-10" />
+            <p className="mt-2 font-medium">Drop your file here, or browse</p>
+            <p className="mt-2 text-opacity-100 text-gray-600">
+              (File size must not exceed 5 MB and only PDF, DOCX, XLSX file formats are allowed to upload.)
+            </p>
+          </div>
+        )}
+
+        <input
+          id="fileInput"
+          type="file"
+          accept={accept}
+          multiple
+          name={templateName || 'fileInput'}
+          onChange={onChangeFiles}
+          className="border-0 clip-rect-[0px_0px_0px_0px] clip-path-inset-[50%] h-[1px] m-[-1px_-1px_-1px_0px] overflow-hidden p-0 absolute w-[1px] whitespace-nowrap"
+        />
       </div>
-
       {isUploading && <div className="loading">Uploading...</div>}
-
-      {fileInfo && (
-        <div className="uploaded-file-info">
-          <h3 className="text-xl font-semibold mb-4">File Uploaded:</h3>
-          <table className="min-w-full table-auto border border-gray-300">
-            <thead>
-              <tr className="border-b border-gray-300">
-                <th className="px-4 py-2 text-left font-medium">Name:</th>
-                <td className="px-4 py-2 border-l border-gray-300">{fileInfo.name}</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-300">
-                <th className="px-4 py-2 text-left font-medium">Content Type:</th>
-                <td className="px-4 py-2 border-l border-gray-300">{fileInfo.contentType}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 };
+
 export default UploadFileTemplate;

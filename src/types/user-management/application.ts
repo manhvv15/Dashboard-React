@@ -113,4 +113,5 @@ export interface UploadFile {
   contentType: string;
   name: string;
   uri: string;
+  size: number;
 }

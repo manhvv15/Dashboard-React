@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction } from 'react';
-
 import { Button, Dialog, DialogBody, DialogFooter, DialogHeader } from '@ichiba/ichiba-core-ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import SvgIcon from '@/components/commons/SvgIcon';
 import { LocaleNamespace } from '@/constants/enums/common';
 import { useApp } from '@/hooks/use-app';
-import { deleteReport } from '@/services/document-service/report';
+import { deleteReportGroup } from '@/services/document-service/reportGroup';
 
 interface Props {
   id: string;
@@ -15,30 +14,30 @@ interface Props {
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const DeleteReportForm = ({ id, open, setOpen }: Props) => {
+const DeleteReportGroupForm = ({ id, open, setOpen }: Props) => {
   const { t: common } = useTranslation(LocaleNamespace.Common);
   const queryClient = useQueryClient();
 
   const { showToast } = useApp();
 
-  const deleteReportMutation = useMutation({
-    mutationFn: deleteReport,
+  const deleteReportGroupMutation = useMutation({
+    mutationFn: deleteReportGroup,
   });
 
   const onSubmitConfirm = () => {
-    deleteReportMutation.mutate(id, {
+    deleteReportGroupMutation.mutate(id, {
       onSuccess: () => {
         showToast({
           type: 'success',
-          summary: common('reports.deleteReportSuccessfully'),
+          summary: common('reportgroups.deleteReportGroupSuccessfully'),
         });
-        queryClient.invalidateQueries(['getReportPaging']);
+        queryClient.invalidateQueries(['getReportGroupPaging']);
         setOpen(false);
       },
       onError: () => {
         showToast({
           type: 'error',
-          summary: common('reports.deleteReportFail'),
+          summary: common('reportgroups.deleteReportGroupFail'),
         });
         setOpen(false);
       },
@@ -48,7 +47,7 @@ const DeleteReportForm = ({ id, open, setOpen }: Props) => {
   return (
     <Dialog size="sm" open={open} handler={setOpen}>
       <DialogHeader className="flex items-center justify-between">
-        <p className="text-lg font-medium leading-5 text-ic-ink-6s">{common('report.delete')}</p>
+        <p className="text-lg font-medium leading-5 text-ic-ink-6s">{common('reportgroup.delete')}</p>
         <button onClick={() => setOpen(false)}>
           <SvgIcon icon="close" width={20} height={20} className="text-ic-ink-6s" />
         </button>
@@ -60,11 +59,11 @@ const DeleteReportForm = ({ id, open, setOpen }: Props) => {
         <Button onClick={() => setOpen(false)} color="primary" variant="outlined">
           {common('cancel')}
         </Button>
-        <Button loading={deleteReportMutation.isLoading} onClick={onSubmitConfirm}>
+        <Button loading={deleteReportGroupMutation.isLoading} onClick={onSubmitConfirm}>
           {common('confirm')}
         </Button>
       </DialogFooter>
     </Dialog>
   );
 };
-export default DeleteReportForm;
+export default DeleteReportGroupForm;
