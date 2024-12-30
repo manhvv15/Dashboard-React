@@ -65,7 +65,7 @@ const CreateReportGroup = () => {
     const request = {
       code: data.code,
       name: data.name,
-      description: data.name,
+      description: data.description,
       displayOrder: data.displayOrder,
       status: parseInt(data.status.toString()),
     } as CreateReportGroupRequest;

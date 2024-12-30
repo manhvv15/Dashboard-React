@@ -68,12 +68,10 @@ export const CreateOrUpdateReportForm = ({ id }: IProps) => {
     },
     retry: false,
   });
-  const applications = applicationData?.items
-    ? applicationData.items.map((i) => ({
-        label: i.name,
-        value: i.id,
-      }))
-    : [];
+  const applications = applicationData?.map((i) => ({
+    label: i.name,
+    value: i.id,
+  })) || [];
   const handleChangeStatus = (data: number) => {
     setValue('status', data);
   };

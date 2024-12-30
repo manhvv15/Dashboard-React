@@ -1,7 +1,6 @@
 import { PageResult } from '@/types/user-management/common';
 import { instance, instanceDocument } from '../xhr';
 import {
-  ApiPaginationResponse,
   ApplicationItem,
   CreateReportRequest,
   ReportByIdResponse,
@@ -35,13 +34,12 @@ export const downloadReport = (id: string): Promise<AxiosResponse> => {
   const url = report.getDownloadFile.replace('{id}', id);
   return instanceDocument.get(url);
 };
-
 export const deleteReport = (id: string): Promise<AxiosResponse> => {
   return instanceDocument.delete(compileRequestURL(report.delete, { id: id }));
 };
 export const getTemplateFile = (file: FormData): Promise<AxiosResponse<UploadFile>> => {
   return instance.post(storage, file);
 };
-export const getApplications = (): Promise<AxiosResponse<ApiPaginationResponse<ApplicationItem>>> => {
-  return instanceDocument.get(applications.getAll);
+export const getApplications = (): Promise<AxiosResponse<ApplicationItem[]>> => {
+  return instanceDocument.get<ApplicationItem[]>(applications.getAll);
 };

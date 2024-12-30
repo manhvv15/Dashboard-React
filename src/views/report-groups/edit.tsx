@@ -69,7 +69,7 @@ const UpdateReportGroup = () => {
       id: id,
       code: data.code,
       name: data.name,
-      description: data.name,
+      description: data.description,
       displayOrder: data.displayOrder,
       status: parseInt(data.status.toString()),
     } as UpdateReportGroupRequest;
